@@ -1,14 +1,23 @@
 jest.mock('../../lib/services/maps-api');
+jest.mock('../../lib/services/weather-api');
 require('dotenv').config();
 const request = require('../request');
 const db = require('../db');
 const { matchIdAndDate, matchMongoId } = require('../match-helpers');
 const getLocation = require('../../lib/services/maps-api');
+const getForecast = require('../../lib/services/weather-api');
 
 getLocation.mockResolvedValue({
   latitude: 38,
   longitude: -130
 });
+
+getForecast.mockResolvedValue([
+  {
+    forecast: 'Partly cloudy throughout the day.',
+    time: new Date('10/02/19')
+  }
+]);
 
 describe('Tour api', () => {
   beforeEach(() => {
@@ -106,12 +115,17 @@ describe('Tour api', () => {
     return postTourWithStop(tour, stop1).then(([, stops]) => {
       expect(stops[0]).toMatchInlineSnapshot(
         matchMongoId,
+
         `
         Object {
           "_id": StringMatching /\\^\\[a-f\\\\d\\]\\{24\\}\\$/i,
           "location": Object {
             "latitude": 38,
             "longitude": -130,
+          },
+          "weather": Object {
+            "forecast": "Partly cloudy throughout the day.",
+            "time": "2019-10-02T07:00:00.000Z",
           },
         }
       `
