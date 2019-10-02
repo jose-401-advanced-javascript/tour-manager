@@ -1,6 +1,14 @@
+jest.mock('../../lib/services/maps-api');
+require('dotenv').config();
 const request = require('../request');
 const db = require('../db');
-const { matchMongoId, matchIdAndDate } = require('../match-helpers');
+const { matchIdAndDate, matchMongoId } = require('../match-helpers');
+const getLocation = require('../../lib/services/maps-api');
+
+getLocation.mockResolvedValue({
+  latitude: 38,
+  longitude: -130
+});
 
 describe('Tour api', () => {
   beforeEach(() => {
@@ -9,7 +17,8 @@ describe('Tour api', () => {
 
   const tour = {
     title: 'Test Tour',
-    activities: ['Coding', 'Testing']
+    activities: ['Coding', 'Testing'],
+    stops: []
   };
 
   function postTour(tour) {
@@ -80,23 +89,33 @@ describe('Tour api', () => {
   const stop1 = { address: '97209' };
 
   function postTourWithStop(tour, stop) {
-    return postTour(tour)
-      .then(savedTour => {
-        return request
-          .post(`/api/tours/${savedTour._id}/stops`)
-          .send(stop)
-          .expect(200)
-          .then(({ body }) => [savedTour, body]);
-      });
+    return postTour(tour).then(savedTour => {
+      return request
+        .post(`/api/tours/${savedTour._id}/stops`)
+        .send(stop)
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body);
+
+          return [savedTour, body];
+        });
+    });
   }
 
   it('adds a stop to a location', () => {
-    return postTourWithStop(tour, stop1)
-      .then(([, stops]) => {
-        expect(stops[0]).toEqual({
-          ...matchIdAndDate,
-          ...stop1,
-        });
-      });
+    return postTourWithStop(tour, stop1).then(([, stops]) => {
+      expect(stops[0]).toMatchInlineSnapshot(
+        matchMongoId,
+        `
+        Object {
+          "_id": StringMatching /\\^\\[a-f\\\\d\\]\\{24\\}\\$/i,
+          "location": Object {
+            "latitude": 38,
+            "longitude": -130,
+          },
+        }
+      `
+      );
+    });
   });
 });
