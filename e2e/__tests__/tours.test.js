@@ -1,6 +1,6 @@
 const request = require('../request');
 const db = require('../db');
-const { matchMongoId } = require('../match-helpers');
+const { matchMongoId, matchIdAndDate } = require('../match-helpers');
 
 describe('Tour api', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('Tour api', () => {
   it('adds a tour', () => {
     return postTour(tour).then(savedTour => {
       expect(savedTour).toMatchInlineSnapshot(
-        matchMongoId,
+        matchIdAndDate,
 
         `
         Object {
@@ -59,7 +59,7 @@ describe('Tour api', () => {
       .then(({ body }) => {
         expect(body.length).toBe(3);
         expect(body[0]).toMatchInlineSnapshot(
-          matchMongoId,
+          matchIdAndDate,
           `
           Object {
             "__v": 0,
@@ -74,6 +74,29 @@ describe('Tour api', () => {
           }
         `
         );
+      });
+  });
+
+  const stop1 = { address: '97209' };
+
+  function postTourWithStop(tour, stop) {
+    return postTour(tour)
+      .then(savedTour => {
+        return request
+          .post(`/api/tours/${savedTour._id}/stops`)
+          .send(stop)
+          .expect(200)
+          .then(({ body }) => [savedTour, body]);
+      });
+  }
+
+  it('adds a stop to a location', () => {
+    return postTourWithStop(tour, stop1)
+      .then(([, stops]) => {
+        expect(stops[0]).toEqual({
+          ...matchIdAndDate,
+          ...stop1,
+        });
       });
   });
 });
