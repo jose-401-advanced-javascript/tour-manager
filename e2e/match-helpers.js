@@ -8,6 +8,9 @@ const matchIdAndDate = {
 
 const matchMongoId = {
   _id: expect.stringMatching(mongoId),
+  weather: {
+    time: expect.any(String)
+  }
 };
 
 module.exports = {

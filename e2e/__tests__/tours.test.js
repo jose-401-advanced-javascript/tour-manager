@@ -104,8 +104,6 @@ describe('Tour api', () => {
         .send(stop)
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
-
           return [savedTour, body];
         });
     });
@@ -125,7 +123,7 @@ describe('Tour api', () => {
           },
           "weather": Object {
             "forecast": "Partly cloudy throughout the day.",
-            "time": "2019-10-02T07:00:00.000Z",
+            "time": Any<String>,
           },
         }
       `
@@ -167,5 +165,4 @@ describe('Tour api', () => {
         });
     });
   });
-
 });
