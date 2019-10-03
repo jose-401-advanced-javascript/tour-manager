@@ -12,7 +12,8 @@
 ### Setup
 #### `.env` requirements
 * `PORT` - 3000
-* `MONGODB_URI` - URL to the running mongo instance/db
+* `MONGODB_URI` - mongodb://<dbuser>:<dbpassword>@ds329058.mlab.com:29058/heroku_plxsw8gg
+
 
 
 #### Running the app
