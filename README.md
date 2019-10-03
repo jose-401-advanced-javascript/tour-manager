@@ -7,7 +7,7 @@
 ### Links and Resources
 * [submission PR](https://github.com/jose-401-advanced-javascript/tour-manager/pull/1)
 * [travis](https://travis-ci.com/jose-401-advanced-javascript/tour-manager)
-* [back-end](http://xyz.com) (when applicable)
+* [back-end](https://fast-beyond-64234.herokuapp.com)
 
 ### Setup
 #### `.env` requirements
