@@ -132,4 +132,17 @@ describe('Tour api', () => {
       );
     });
   });
+
+  it('removes a stop', () => {
+    return postTourWithStop(tour, stop1)
+      .then(([tour, shows]) => {
+        return request
+          .delete(`/api/tours/${tour._id}/stops/${shows[0]._id}`)
+          .expect(200);
+      })
+      .then(({ body }) => {
+        expect(body.length).toBe(0);
+      });
+  });
+  
 });
