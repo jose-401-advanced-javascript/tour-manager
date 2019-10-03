@@ -144,5 +144,28 @@ describe('Tour api', () => {
         expect(body.length).toBe(0);
       });
   });
-  
+
+  const attend1 = {
+    attendance: 19
+  };
+
+  it('updates attendance', () => {
+    return postTour(tour).then(tour => {
+      return request
+        .post(`/api/tours/${tour._id}/stops`)
+        .send(stop1)
+        .expect(200)
+        .then(out => {
+          const stops = out.body[0];
+          return request
+            .put(`/api/tours/${tour._id}/stops/${stops._id}/attendance`)
+            .send(attend1)
+            .expect(200)
+            .then(({ body }) => {
+              expect(body[0].attendance).toBe(19);
+            });
+        });
+    });
+  });
+
 });
